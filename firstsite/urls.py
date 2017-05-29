@@ -15,11 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from firstapp.views import first_site, index, article_detail
+from firstapp.views import first_site, index, detail, detail_comment
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^first_site/', first_site),
     url(r'^index/', index, name='index'),
-    url(r'^detail/(?P<page_num>\d+)$', article_detail, name='article_detail'),
+    url(r'^detail/(?P<page_num>\d+)$', detail, name='detail'),
+    url(r'^detail/(?P<page_num>\d+)/comment/$', detail_comment, name='comment'),
 ]

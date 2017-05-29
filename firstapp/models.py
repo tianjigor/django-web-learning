@@ -25,7 +25,8 @@ class Article(models.Model):
 class Comment(models.Model):
     name = models.CharField(null=True, blank=True, max_length=50)
     comment = models.TextField()
-
+    belong_to = models.ForeignKey(to=Article, related_name='under_comment', null=True, blank=True)
+    best_comment = models.BooleanField(default=False)
 
     def __str__(self):
         return self.comment

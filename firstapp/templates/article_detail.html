@@ -44,7 +44,29 @@
         <div class="ui segment container" style="width:700px;">
             <h3 class="ui header" style="font-family:'Oswald', sans-serif;">Comments</h3>
             <div class="ui comments">
-                {% for comment in comment_list %}
+                {% if best_comment %}
+                    <div class="ui mini red left ribbon label">
+                        <i class="icon fire"></i>
+                        最佳评论
+                    </div>
+                    <div class="comment">
+                        <div class="avatar">
+                            <img src="http://semantic-ui.com/images/avatar/small/matt.jpg" alt="" />
+                        </div>
+                        <div class="content">
+                            <a href="#" class="author">{{ best_comment.name }}</a>
+                            <div class="metadata">
+                                <div class="date">2 days ago</div>
+                            </div>
+                            <p class="text" style="font-family: 'Raleway', sans-serif;">
+                                {{ best_comment.comment }}
+                            </p>
+                        </div>
+                    {% endif %}
+
+                <div class="ui divider"></div>
+
+                {% for comment in article.under_comment.all %}
                     <div class="comment">
                         <div class="avatar">
                             <img src="http://semantic-ui.com/images/avatar/small/matt.jpg" alt="" />
@@ -63,7 +85,7 @@
 
             </div>
             <div class="ui divider"></div>
-            <form class="ui error tiny form" method="post">
+            <form class="ui error tiny form" action="{% url 'comment' article.id %}"method="post">
                 {% if form.errors %} <!--访问errors 属性可以获得错误信息的一个字典：根据{{ form }}，所有的表单字段和它们的属性将通过Django 的模板语言拆分成HTML 标记 -->
                     <div class="ui error message">
                         {{ form.errors }}

@@ -47,21 +47,59 @@ def article_detail(request, page_num):
     if request.method == 'POST':
         print 'request POST'
         form = CommentForms(request.POST)
+        print form
         # is_valid表单对象的首要任务就是验证数据。对于绑定的表单实例，可以调用is_valid()方法来执行验证并返回一个表示数据是否合法的布尔值。
         if form.is_valid():
-            print 'form pass'
             # cleaned_data表单类中的每个字段不仅负责验证数据，还负责“清洁”它们 —— 将它们转换为正确的格式。这是个非常好用的功能，因为它允许字段以多种方式输入数据，并总能得到一致的输出。
             name = form.cleaned_data['name']
             comment = form.cleaned_data['comment']
-            c = Comment(name=name, comment=comment)
+            a = Article.objects.get(id=page_num)
+            c = Comment(name=name, comment=comment, belong_to=a)
             c.save()
-            return redirect(to='article_detail')
-    print 'make sure here'
+            return redirect(to='article_detail',page_num=page_num)
     context = {}
-    comment_list = Comment.objects.all()
+    a = Article.objects.get(id=page_num)
+    best_comment = Comment.objects.filter(best_comment=True, belong_to=a)
+    if best_comment:
+        context['best_comment'] = best_comment[0]
+    # comment_list = Comment.objects.all()
     article = Article.objects.get(id=page_num)
     context['article'] = article
-    context['comment_list'] = comment_list
+    # context['comment_list'] = comment_list
     context['form'] = form
     print dir(form)
     return render(request, 'article_detail.html', context)
+
+
+def detail(request, page_num, error_form=None):
+    print 'before request get'
+    form = CommentForms
+    print 'after request get'
+    context = {}
+    a = Article.objects.get(id=page_num)
+    best_comment = Comment.objects.filter(best_comment=True, belong_to=a)
+    if best_comment:
+        context['best_comment'] = best_comment[0]
+    article = Article.objects.get(id=page_num)
+    context['article'] = article
+    if error_form is not None:
+        context['form'] = error_form
+    else:
+        context['form'] = form
+    return render(request, 'article_detail.html', context)
+
+
+def detail_comment(request, page_num):
+    # request.POST是一个字典<QueryDict: {u'comment': [u'aaa'], u'csrfmiddlewaretoken': [u'7FnDoRXR4XO6lNUIVgRbMpPPtHfw6QHKAD0naPlMDSpgpyOgAXXl9SUar9ignemJ'], u'name': [u'abc']}>
+    form = CommentForms(request.POST)
+    # is_valid表单对象的首要任务就是验证数据。对于绑定的表单实例，可以调用is_valid()方法来执行验证并返回一个表示数据是否合法的布尔值。
+    if form.is_valid():
+        # cleaned_data表单类中的每个字段不仅负责验证数据，还负责“清洁”它们 —— 将它们转换为正确的格式。这是个非常好用的功能，因为它允许字段以多种方式输入数据，并总能得到一致的输出。
+        name = form.cleaned_data['name']
+        comment = form.cleaned_data['comment']
+        a = Article.objects.get(id=page_num)
+        c = Comment(name=name, comment=comment, belong_to=a)
+        c.save()
+        return redirect(to='detail',page_num=page_num)
+    else:
+        return detail(request, page_num=page_num, error_form=form)
