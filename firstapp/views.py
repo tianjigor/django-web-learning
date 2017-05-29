@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse
-from firstapp.models import Person, Article
+from firstapp.models import Person
 from django.template import Context, Template
 # Create your views here.
 
@@ -25,9 +25,3 @@ def first_site(request):
     web_page =  t.render(c)
 
     return HttpResponse(web_page)
-
-def index(request):
-    context = {}
-    article = Article.objects.all()
-    context['article_list'] = article
-    return render(request, 'first_web_2.html', context)
